@@ -1,0 +1,2 @@
+#!/bin/bash
+oc get secret tackle-keycloak-sso -nkonveyor-tackle -o json|grep password|cut -d "\"" -f 4 |base64 -d; echo
