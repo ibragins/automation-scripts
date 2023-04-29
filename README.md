@@ -20,7 +20,7 @@ It will bring you back admin's password to login to keycloak admin console of Ta
 __Usage:__ Just run the script, no parameters required.
 _____________________
 + __geturl__  
-It will bring you back OSP console URL  
+It will bring you back OSP console URL and Tackle OR MTA console URL  
 __Usage:__ Just run the script, no parameters required.
 _____________________
 + __geturl-mtv__  
