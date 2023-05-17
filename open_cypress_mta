@@ -6,9 +6,10 @@ export cypress_user='admin'
 export cypress_pass='Dog8code'
 export cypress_tackleUrl=$(oc get routes --all-namespaces|egrep 'tackle-ui|mta-ui'|awk '{print "https://"$3}')
 export cypress_keycloakAdminPassword=$(oc get secret credential-mta-rhsso -nopenshift-mta -o json |grep -i password|cut -d "\"" -f 4|base64 -d;)
-export cypress_git_user=""
-export cypress_git_password=""
+export cypress_git_user="ibragins"
+export cypress_git_password=$(cat ~/.secrets/github_token)
 export cypress_rwx_enabled="true"
+# export cypress_mavenXml=$(cat ~/github.com/tackle-ui-tests/cypress/fixtures/xml/settings.txt)
 cd ~/github.com/tackle-ui-tests
 npx cypress open
 

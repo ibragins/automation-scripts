@@ -5,10 +5,6 @@ then
 else
   if [[ $(cat /proc/net/route | grep tun0) ]]
   then
-    if [[ ! -d ~/cnv-qe.rhcloud.com]]
-    then
-      mkdir ~/cnv-qe.rhcloud.com
-    fi
     mount -t nfs 10.9.96.21:/rhos_psi_cluster_dirs ~/cnv-qe.rhcloud.com
   else
     echo "VPN not enabled"
