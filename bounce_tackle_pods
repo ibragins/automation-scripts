@@ -1,2 +1,2 @@
 #!/bin/bash
-for pod in $(oc get pods -nkonveyor-tackle|egrep -iv 'sso|name'|cut -d " " -f 1); do oc delete pod $pod -nkonveyor-tackle; done
+for pod in $(oc get pods -nkonveyor-tackle|grep -iv -E 'sso|name'|cut -d " " -f 1); do oc delete pod $pod -nkonveyor-tackle; done

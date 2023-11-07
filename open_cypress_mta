@@ -4,12 +4,35 @@ export KUBECONFIG=~/cnv-qe.rhcloud.com/$cluster/auth/kubeconfig
 oc login -u kubeadmin -p $(cat ~/cnv-qe.rhcloud.com/$cluster/auth/kubeadmin-password) -n default
 export cypress_user='admin'
 export cypress_pass='Dog8code'
-export cypress_tackleUrl=$(oc get routes --all-namespaces|egrep 'tackle-ui|mta-ui'|awk '{print "https://"$3}')
-export cypress_keycloakAdminPassword=$(oc get secret credential-mta-rhsso -nopenshift-mta -o json |grep -i password|cut -d "\"" -f 4|base64 -d;)
-export cypress_git_user="ibragins"
-export cypress_git_password=$(cat ~/.secrets/github_token)
+# export cypress_tackleUrl=$(oc get routes --all-namespaces|grep -E 'mta-ui'|grep -v mta2|awk '{print "https://"$3}')
+# export cypress_keycloakAdminPassword=$(oc get secret credential-mta-rhsso -nopenshift-mta -o json |grep -i password|cut -d "\"" -f 4|base64 -d;)
+
+export NS=$(oc projects | grep -E "tackle|mta"|grep -v mta2|xargs);
+export cypress_tackleUrl=$(oc get routes -n$NS|grep -E 'tackle-ui|mta-ui'|awk '{print "https://"$2}')
+if [ "$NS" = "openshift-mta" ]; then
+  export secret_name="credential-mta-rhsso"
+else
+  export secret_name="tackle-keycloak-sso"
+fi
+
+export cypress_keycloakAdminPassword=$(oc get secret $secret_name -n$NS -o json |grep -i password|cut -d "\"" -f 4|base64 -d;)
+
+echo Keycloak admin password: $cypress_keycloakAdminPassword
 export cypress_rwx_enabled="true"
+export cypress_git_user="ibragins"
+export cypress_git_password=$(cat ~/.secrets/git_password)
+export cypress_jira_atlassian_cloud_url="https://ibragins.atlassian.net/"
+export cypress_jira_atlassian_cloud_email="ibragins@redhat.com"
+export cypress_jira_atlassian_cloud_token=$(cat ~/.secrets/jira_cloud_token)
+export cypress_jira_stage_datacenter_url="https://issues.stage.redhat.com"
+export cypress_jira_stage_bearer_token=$(cat ~/.secrets/jira_stage_token)
+export cypress_jira_atlassian_cloud_project="mta_integration"
+export cypress_jira_stage_basic_login="mta-qe",
+export cypress_jira_stage_basic_password="Mta.qe.testing",
+
+
+export cypress_rwx_enabled="true"
+export cypress_logLevel="VERBOSE"
 # export cypress_mavenXml=$(cat ~/github.com/tackle-ui-tests/cypress/fixtures/xml/settings.txt)
 cd ~/github.com/tackle-ui-tests
 npx cypress open
-

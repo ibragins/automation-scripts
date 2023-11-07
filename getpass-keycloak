@@ -1,2 +1,9 @@
 #!/bin/bash
-oc get secret tackle-keycloak-sso -nkonveyor-tackle -o json|grep password|cut -d "\"" -f 4 |base64 -d; echo
+if [ "$NS" = "openshift-mta" ]; then
+  export secret_name="credential-mta-rhsso"
+else
+  export secret_name="tackle-keycloak-sso"
+fi
+
+echo "MTA / Tackle keycloak password:"
+echo $(oc get secret $secret_name -n$NS -o json |grep -i password|cut -d "\"" -f 4|base64 -d;)

@@ -3,4 +3,5 @@ echo "OCP console URL:"
 echo "https://$(oc get routes --all-namespaces|grep console|grep -v downloads|awk '{print $3}')"
 echo "----------"
 echo "MTA / Tackle console URL: "
-echo $(oc get routes --all-namespaces|egrep 'tackle-ui|mta-ui'|awk '{print "https://"$3}')
+NS=$(oc projects | grep -E "tackle|mta"|grep -v mta2|xargs);
+echo $(oc get routes -n$NS|grep -E 'tackle-ui|mta-ui'|awk '{print "https://"$2}')

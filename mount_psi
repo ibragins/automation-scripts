@@ -3,9 +3,14 @@ if [[ $(ls -A ~/cnv-qe.rhcloud.com) ]]
 then
   echo "Share already mounted"
 else
-  if [[ $(cat /proc/net/route | grep tun0) ]]
-  then
-    mount -t nfs 10.9.96.21:/rhos_psi_cluster_dirs ~/cnv-qe.rhcloud.com
+#  if [[ $(cat /proc/net/route | grep tun0) ]]
+#  then
+  if [[ $(cat /proc/net/route | grep tun0) || $(iwgetid -r) == "Red Hat Guest" ]]; then
+    cd ~/
+    mount -t nfs 10.9.96.21:/rhos_psi_cluster_dirs $(pwd)/cnv-qe.rhcloud.com
+    if [[ $(ls -A ~/cnv-qe.rhcloud.com) ]] then
+	echo "Folder mounted successfully!"
+    fi
   else
     echo "VPN not enabled"
   fi

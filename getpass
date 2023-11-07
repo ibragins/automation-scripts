@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "OCP cluster console password:"
+cat ~/cnv-qe.rhcloud.com/$1/auth/kubeadmin-password; echo
+
+

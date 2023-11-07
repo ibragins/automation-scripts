@@ -1,2 +1,0 @@
-#!/bin/bash
-echo $(oc get routes --all-namespaces|egrep 'tackle-ui|mta-ui'|awk '{print "https://"$3}')

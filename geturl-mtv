@@ -1,4 +1,2 @@
 #!/bin/bash
-#cat /home/igor/cnv-qe.rhcloud.com/$1/auth/kubeadmin-password; echo
-#echo "https://$(oc get routes --all-namespaces|grep console|grep -v downloads|awk '{print $3}')"
 echo "https://$(oc get routes --all-namespaces|grep fork|grep -v invent|awk '{print $3}')"
