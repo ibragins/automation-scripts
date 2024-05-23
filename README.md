@@ -38,12 +38,17 @@ _____________________
 + __open_cypress_minikube__  
 It will start Cypress test manager looking for local minikube deployment as target  
 __Usage:__ Just run the script, no parameters required.  
-__IMPORTANT:__ Parameters `cypress_git_user` and `cypress_git_password` should contain your token to github, otherwize some tests will fail.
+__IMPORTANT:__ Parameters `cypress_git_user`, `cypress_git_password` and more should contain your real auth data to github, otherwize some tests will fail.
 _____________________
 + __open_cypress_mta__  
 It will start Cypress test manager looking for MTA cluster as target  
 __Usage:__ Run the script with cluster name where MTA is deployed as a parameter.  
-__IMPORTANT:__ Parameters `cypress_git_user` and `cypress_git_password` should contain your token to github, otherwize some tests will fail.
+__IMPORTANT:__ Parameters `cypress_git_user`, `cypress_git_password` and more should contain your real auth data to github, otherwize some tests will fail.
+_____________________
++ __open_cypress_minikube__  
+It will start Cypress test manager looking for local minikube with Tackle on top of it as target  
+__Usage:__ Run the script without anyparameters.  
+__IMPORTANT:__ Parameters `cypress_git_user`, `cypress_git_password` and more should contain your real auth data to github, otherwize some tests will fail.
 _____________________
 + __cluster.conf__  
 It will login to the target cluster and define all variables required for Cypress to work, but will not start Cypress itself    

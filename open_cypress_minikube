@@ -1,21 +1,12 @@
 #!/bin/bash
-export cluster=$1
-export KUBECONFIG=~/cnv-qe.rhcloud.com/$cluster/auth/kubeconfig
-oc login -u kubeadmin -p $(cat ~/cnv-qe.rhcloud.com/$cluster/auth/kubeadmin-password) -n default
+export KUBECONFIG=~/.kube/config
 export cypress_user='admin'
 export cypress_pass='Dog8code'
+export cypress_tackleUrl="http://"$(minikube ip)
+echo $cypress_tackleUrl
 
-export NS=$(oc projects | grep -E "tackle|mta"|grep -v mta2|xargs);
-export cypress_tackleUrl=$(oc get routes -n$NS|grep -E 'tackle-ui|mta-ui'|awk '{print "https://"$2}')
-if [ "$NS" = "openshift-mta" ]; then
-  export secret_name="credential-mta-rhsso"
-else
-  export secret_name="tackle-keycloak-sso"
-fi
+export cypress_keycloakAdminPassword=$(oc get secret tackle-keycloak-sso -nkonveyor-tackle -o json|grep password|cut -d "\"" -f 4 |base64 -d; echo)
 
-export cypress_keycloakAdminPassword=$(oc get secret $secret_name -n$NS -o json |grep -i password|cut -d "\"" -f 4|base64 -d;)
-
-echo Keycloak admin password: $cypress_keycloakAdminPassword
 export cypress_rwx_enabled="true"
 export cypress_git_user="ibragins"
 export cypress_git_password=$(cat ~/.secrets/git_password)
