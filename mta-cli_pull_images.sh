@@ -10,7 +10,7 @@ else
 fi
 
 echo "Attention, using $CMD as container engine"
-echo "Pulling images..."
+echo "Pulling D/S images..."
 for item in java generic dotnet; do
     package=$(cat output.txt | grep registry | grep "$item" | cut -d "\"" -f 2|cut -d "/" -f 3)
     $CMD pull "registry-proxy.engineering.redhat.com/rh-osbs/mta-$package"

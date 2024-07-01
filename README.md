@@ -55,9 +55,9 @@ It will login to the target cluster and define all variables required for Cypres
 __Usage:__ Run command `source cluster.conf cluster_name` where `cluster_name` is the target cluster you want to use.   
 __IMPORTANT:__ Parameters `cypress_git_user`, `cypress_git_password` and some others should be configures properly, otherwize you will need to configure them manually to prevent some test failures.   
 _____________________
-+ __kantra_pull_images.sh__  
++ __mta-cli_pull_images.sh__  
 It will pull to the local host all images required to run Kantra CLI on your local host. 
 __Usage:__ Do `git clone` from https://gitlab.cee.redhat.com/rhmt/misc-downstream/-/blob/main/get-image-build-details.py?ref_type=heads. 
 Then go to respective repo and run `./get-image-build-details.py -b mta-operator-bundle-container-7.1.0-19 > output.txt`
-Copy `output.txt` to the folder with kantra_pull_images script and run it.  
+Copy `output.txt` to the folder with mta-cli_pull_images script and run it.  
 __IMPORTANT:__ This script pulls images with podman by default. If you want to use docker instead, please run `kantra_pull_images.sh docker`
