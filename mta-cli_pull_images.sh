@@ -25,7 +25,9 @@ done
 
 echo --------------------
 echo "Tagging images..."
-for item in java generic dotnet cli; do
+for item in java generic dotnet; do
     $CMD tag ${hashes[$item]} "registry.redhat.io/mta/mta-$item-external-provider-rhel9:$version"
     echo "$item image is tagged"
 done
+$CMD tag ${hashes[cli]} "registry.redhat.io/mta/mta-cli-rhel9:$version"
+echo "cli image is tagged"
