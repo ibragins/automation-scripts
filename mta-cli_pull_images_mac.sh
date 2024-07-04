@@ -35,5 +35,9 @@ for i in "${!images[@]}"; do
     else
         $CMD tag "$hash" "registry.redhat.io/mta/mta-cli-rhel9:$version"
         echo "cli image is tagged"
+        if [ ! -d "$HOME/bin" ]; then
+            mkdir "$HOME/bin"
+        fi
+        $CMD cp $($CMD create "$hash"):/usr/local/bin/darwin-mta-cli ~/bin/
     fi
 done
