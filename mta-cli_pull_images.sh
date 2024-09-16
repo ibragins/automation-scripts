@@ -1,5 +1,5 @@
 #!/bin/bash
-version="7.1.0"
+version="7.1.1"
 declare -A images
 declare -A hashes
 
@@ -25,11 +25,13 @@ done
 
 echo --------------------
 echo "Tagging images..."
-for item in java generic dotnet; do
-    $CMD tag ${hashes[$item]} "registry.redhat.io/mta/mta-$item-external-provider-rhel9:$version"
+for item in java generic dotnet cli; do
+    image=$(cat output.txt | grep registry | grep "$item" | cut -d "\"" -f 2|cut -d "/" -f 3|cut -d "@" -f 1)
+    $CMD tag ${hashes[$item]} "registry.redhat.io/mta/$image:$version"
     echo "$item image is tagged"
 done
-$CMD tag ${hashes[cli]} "registry.redhat.io/mta/mta-cli-rhel9:$version"
+# $CMD tag ${hashes[dotnet]} "registry.redhat.io/mta/mta-dotnet-external-provider-rhel8:$version"
+# $CMD tag ${hashes[cli]} "registry.redhat.io/mta/mta-cli-rhel9:$version"
 echo "cli image is tagged"
 
 if [ ! -d "$HOME/bin" ]; then
