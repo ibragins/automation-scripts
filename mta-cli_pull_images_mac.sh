@@ -1,5 +1,5 @@
 #!/bin/bash
-version="7.1.0"
+version="7.2.0"
 images=("java" "generic" "dotnet" "cli")
 hashes=()
 
@@ -29,15 +29,22 @@ echo "Tagging images..."
 for i in "${!images[@]}"; do
     item=${images[$i]}
     hash=${hashes[$i]}
-    if [ "$item" != "cli" ]; then
-        $CMD tag "$hash" "registry.redhat.io/mta/mta-$item-external-provider-rhel9:$version"
-        echo "$item image is tagged"
-    else
-        $CMD tag "$hash" "registry.redhat.io/mta/mta-cli-rhel9:$version"
-        echo "cli image is tagged"
-        if [ ! -d "$HOME/bin" ]; then
-            mkdir "$HOME/bin"
-        fi
-        $CMD cp $($CMD create "$hash"):/usr/local/bin/darwin-mta-cli ~/bin/
-    fi
+    image=$(cat output.txt | grep registry | grep "$item" | cut -d "\"" -f 2|cut -d "/" -f 3|cut -d "@" -f 1)
+    $CMD tag "$hash" "registry.redhat.io/mta/$image:$version"
+
+    # if [ "$item" != "cli" ]; then
+    #     $CMD tag "$hash" "registry.redhat.io/mta/mta-$item-external-provider-rhel9:$version"
+    #     echo "$item image is tagged"
+    # else
+    #     $CMD tag "$hash" "registry.redhat.io/mta/mta-cli-rhel9:$version"
+    #     echo "cli image is tagged"
+    #     if [ ! -d "$HOME/bin" ]; then
+    #         mkdir "$HOME/bin"
+    #     fi
+    #     $CMD cp $($CMD create "$hash"):/usr/local/bin/darwin-mta-cli ~/bin/
+    # fi
 done
+if [ ! -d "$HOME/bin" ]; then
+    mkdir "$HOME/bin"
+fi
+$CMD cp $($CMD create "$hash"):/usr/local/bin/darwin-mta-cli ~/bin/

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+SERVER=$1
+
+# scp -i ~/.ssh/aws-vm-login-key.pem -o StrictHostKeyChecking=no ~/.secrets/pull-secret.json ec2-user@$1:~/
+scp -i ~/.ssh/aws-vm-login-key.pem -o StrictHostKeyChecking=no ~/.secrets/pull-secret.json ec2-user@$SERVER:~/
+# scp -i ~/.ssh/aws-vm-login-key.pem mta-cli_pull_images_mac.sh ec2-user@$SERVER:~/
+scp -i ~/.ssh/aws-vm-login-key.pem output.txt ec2-user@$SERVER:~/
+scp -i ~/.ssh/aws-vm-login-key.pem ~/.secrets/.env.mac ec2-user@$SERVER:~/
+ssh -i ~/.ssh/aws-vm-login-key.pem ec2-user@$SERVER << EOF
+    mkdir -p ~/.docker
+    mv ~/pull-secret.json ~/.docker/config.json
+#     mkdir .kantra
+#     git clone https://github.com/konveyor-ecosystem/kantra-cli-tests.git
+#     cd ~/kantra-cli-tests
+#     pip3 install -r requirements.txt --break-system-packages
+    cp ~/.env.mac ./
+    cd ~/
+    brew install maven
+    podman machine init --cpus 4 --memory 4096; podman machine start
+#     bash ~/mta-cli_pull_images_mac.sh
+#    echo 'PS1="\[\033[01;38;5;214m\]\u@\h\[\033[00m\]:\[\033[01;94m\]\w\[\033[00m\]\$ "' >> ~/.bashrc
+#    echo 'alias ll="ls -la"' >> ~/.bashrc
+EOF
