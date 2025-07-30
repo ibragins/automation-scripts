@@ -1,35 +1,76 @@
 #!/bin/bash
-export cluster=$1
+# set -euo pipefail
+
+if [[ -z "$1" ]]; then
+    echo "Usage: $0 <cluster_name>"
+    return 1
+fi
+
+cluster=$1
 export KUBECONFIG=~/cnv-qe.rhcloud.com/$cluster/auth/kubeconfig
 oc login -u kubeadmin -p $(cat ~/cnv-qe.rhcloud.com/$cluster/auth/kubeadmin-password) -n default
+
 export cypress_user='admin'
 export cypress_pass='Dog8code'
 
-export NS=$(oc projects | grep -E "tackle|mta"|grep -v mta2|xargs);
-export cypress_tackleUrl=$(oc get routes -n$NS|grep -E 'tackle-ui|mta-ui'|awk '{print "https://"$2}')
-if [ "$NS" = "openshift-mta" ]; then
-  export secret_name="credential-mta-rhsso"
+# Getting namespace
+NS=$(oc projects | awk '/tackle|mta/ && !/mta2/ {print $1; exit}')
+export NS
+
+# Getting URL Cypress
+export cypress_baseUrl=$(oc get routes -n "$NS" --no-headers | awk '/tackle-ui|mta-ui/ {print "https://"$2; exit}')
+
+# Getting version
+VERSION=$(oc get pods -n "$NS" --no-headers -o custom-columns=":metadata.name" | grep ui | head -n1 | xargs oc get pod -n "$NS" -o json | jq -r '.spec.containers[].env[] | select(.name == "VERSION") | .value')
+
+# Function to check if VERSION >= 7.3
+is_version_ge_73() {
+  printf '%s\n' "7.3" "$VERSION" | sort -V | head -n1 | grep -q "7.3"
+}
+
+# Geting Keycloak Pod name
+if [[ "$NS" == "openshift-mta" ]]; then
+  if is_version_ge_73; then
+    KEYCLOAK_POD="mta-keycloak-rhbk"
+  else
+    KEYCLOAK_POD="credential-mta-rhsso"
+  fi
 else
-  export secret_name="tackle-keycloak-sso"
+  KEYCLOAK_POD="tackle-keycloak-sso"
 fi
 
-export cypress_keycloakAdminPassword=$(oc get secret $secret_name -n$NS -o json |grep -i password|cut -d "\"" -f 4|base64 -d;)
+# Getting Keycloak Admin password
+SECRET_KEY=$(if is_version_ge_73; then echo "password"; else echo "ADMIN_PASSWORD"; fi)
+export cypress_keycloakAdminPassword=$(oc get secret "$KEYCLOAK_POD" -n "$NS" -o json | jq -r ".data.${SECRET_KEY} | @base64d")
 
-echo Keycloak admin password: $cypress_keycloakAdminPassword
-export cypress_rwx_enabled="true"
 export cypress_git_user="ibragins"
-export cypress_git_password=$(cat ~/.secrets/git_password)
+export cypress_git_password=$(cat ~/.secrets/github_token)
+export cypress_rwx_enabled="true"
 export cypress_jira_atlassian_cloud_url="https://ibragins.atlassian.net/"
 export cypress_jira_atlassian_cloud_email="ibragins@redhat.com"
-export cypress_jira_atlassian_cloud_token=$(cat ~/.secrets/jira_cloud_token)
+export cypress_jira_atlassian_cloud_token=$(cat ~/.secrets/jira_token)
 export cypress_jira_stage_datacenter_url="https://issues.stage.redhat.com"
-export cypress_jira_stage_bearer_token=$(cat ~/.secrets/jira_stage_token)
-export cypress_jira_atlassian_cloud_project="mta_integration"
-export cypress_jira_stage_basic_login="mta-qe"
-export cypress_jira_stage_basic_password=$(cat ~/.secrets/jira_stage_password)
-
+export cypress_jira_stage_bearer_token=$(cat ~/.secrets/jira_bearer_token)
 
 export cypress_rwx_enabled="true"
 export cypress_logLevel="VERBOSE"
+export cypress_mtaVersion=$2
+export cypress_sourceMtaVersion=$3
+
+echo "OCP console URL:"
+echo "https://$(oc get routes --all-namespaces|grep console|grep -v downloads|awk '{print $3}')"
+echo 'OCP password: '
+~/bin/getpass $cluster
+
+echo "----------"
+echo MTA version: $VERSION
+echo "MTA / Tackle console URL: "
+echo $cypress_baseUrl
+echo 
+echo 'Keycloak password: '
+echo $cypress_keycloakAdminPassword
+echo
+
+
 cd ~/github.com/tackle-ui-tests
 npx cypress open

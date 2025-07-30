@@ -1,5 +1,5 @@
 #!/bin/bash
-version="7.2.0"
+version="7.2.2"
 declare -A images
 declare -A hashes
 
